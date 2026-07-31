@@ -1,3 +1,13 @@
+/**
+ * ============================================================================
+ * Project:       pdf_search
+ * Description:   Fast PDF text & OCR search tool for macOS & Linux
+ * Author:        cjoy72 (cjoy720@gmail.com)
+ * Repository:    https://github.com/cjoy72/pdf_search
+ * License:       MIT
+ * ============================================================================
+ */
+
 #include <ctype.h>
 #include <dirent.h>
 #include <stdio.h>
