@@ -1,129 +1,160 @@
-# pdf_search
+# 🔍 `pdf_search`
 
-A C program that searches PDF files for a case-insensitive text phrase and reports matching file paths and page numbers.
+> **Fast, recursive PDF search tool written in C with automatic OCR fallback for scanned documents.**
 
-## Features & OCR Capabilities
-
-- **Direct Text Search**: Uses `pdftotext` for fast text extraction on standard PDFs.
-- **Automatic OCR Fallback**: If a page is scanned or an image with no embedded text layer, it automatically renders the page to an image (`pdftoppm`) and performs Optical Character Recognition using `tesseract`.
-- **Recursive Directory Search**: Recursively traverses folders to search all `.pdf` / `.PDF` files.
+![C99](https://img.shields.io/badge/Language-C99-blue.svg)
+![Platform](https://img.shields.io/badge/Platform-macOS%20%7C%20Linux-lightgrey.svg)
+![License](https://img.shields.io/badge/License-MIT-green.svg)
+![OCR Engine](https://img.shields.io/badge/OCR-Tesseract-orange.svg)
 
 ---
 
-## Hassle-Free Installation
+## ⚡ Quick One-Line Installation
 
-For an easy, automated installation experience without manual setup, run the included installer script [`install_pdf_search.sh`](install_pdf_search.sh):
+> [!IMPORTANT]
+> **Get started in seconds!** Run the one-line automated installer in your terminal to automatically resolve system dependencies, compile `pdf_search`, and install it system-wide:
 
-```sh
+```bash
 curl -sSL https://raw.githubusercontent.com/cjoy72/pdf_search/main/install_pdf_search.sh | bash
 ```
 
-Or execute it directly from a local repository copy:
+---
 
-```sh
-chmod +x install_pdf_search.sh
-./install_pdf_search.sh
-```
+## ✨ Key Features
 
-### What `install_pdf_search.sh` Handles Automatically:
-1. **OS Compatibility Check**: Verifies that your system is running a supported operating system (macOS or Debian/Ubuntu-based Linux).
-2. **Repository & Dependency Setup**: Clones the repository and runs `make`, which detects and installs missing dependencies (`poppler`, `tesseract`, etc.) via `brew` or `apt`.
-3. **System Binary Installation**: Builds and installs `pdf_search` into `/usr/local/bin` so it is available command-line wide across any directory.
-4. **Automatic Cleanup**: Automatically cleans up temporary cloned files and build directories upon completion.
+- ⚡ **Fast Direct Extraction**: Uses `pdftotext` for ultra-fast text search on standard vector PDFs.
+- 👁️ **Smart OCR Fallback**: Automatically detects scanned/image-only PDF pages, renders them (`pdftoppm`), and runs Optical Character Recognition via `tesseract`.
+- 📂 **Recursive Directory Search**: Recursively traverses deep directory structures to search across all `.pdf` and `.PDF` files.
+- 📦 **Auto-Dependency Resolution**: Automatically detects and installs required OS packages (`poppler`, `tesseract`, etc.) during setup.
+- 🌐 **System-Wide Availability**: Installs directly to `/usr/local/bin` so you can search from any terminal directory.
 
 ---
 
-## Complete List of Dependencies
+## 🚀 Usage
 
-### 1. Build & Compiler Dependencies
-- **C Compiler**: `gcc` or `clang` with C99 support (`-std=c99`).
-- **Build Tool**: `make` (GNU Make).
-- **C Standard Library**: Standard C99 / POSIX headers (`stdio.h`, `stdlib.h`, `string.h`, `ctype.h`, `dirent.h`, `sys/stat.h`, `sys/types.h`, `unistd.h`).
+Since `pdf_search` is installed system-wide, run it directly from any directory:
 
-### 2. Runtime CLI Dependencies
-- **Poppler Utilities** (`poppler` package):
-  - `pdftotext`: Extracts plain text streams from PDF pages.
-  - `pdfinfo`: Reads PDF metadata and page count.
-  - `pdftoppm`: Renders scanned PDF pages into PNG images for OCR.
-- **Tesseract OCR Engine** (`tesseract` package):
-  - `tesseract`: Performs Optical Character Recognition on rendered page images.
-- **Tesseract Language Data** (`tesseract-lang` package):
-  - Provides trained OCR models and language datasets for multi-language text recognition.
-
-### 3. System Requirements
-- **OS**: macOS or Linux.
-- **Temporary Storage**: Access to `/private/tmp` (or `/tmp`) for transient page image files during OCR processing.
-
----
-
-## Installation of Dependencies
-
-### On macOS (using Homebrew)
-```sh
-brew install poppler tesseract tesseract-lang
-```
-
-### On Linux (Ubuntu / Debian)
-```sh
-sudo apt-get update
-sudo apt-get install -y build-essential poppler-utils tesseract-ocr tesseract-ocr-all
-```
-
----
-
-## Build & System Installation
-
-To compile and install `pdf_search` as a system program (compatible with both macOS and Linux):
-
-```sh
-make
-```
-
-When you run `make`:
-1. It automatically checks for and installs missing dependencies (`poppler`, `tesseract`, `tesseract-lang`) via Homebrew or Linux package managers (`apt`, `dnf`, `pacman`).
-2. Compiles the `pdf_search` executable.
-3. Installs `pdf_search` system-wide to `/usr/local/bin` (asking for `sudo` permissions if needed) so it can be executed from **any directory**.
-
-To uninstall the system binary:
-```sh
-make uninstall
-```
-
-To clean build artifacts:
-```sh
-make clean
-```
-
----
-
-## Usage
-
-Since `pdf_search` is installed system-wide, you can run it from any directory:
-
-```sh
-pdf_search <search-term> [folder]
+```bash
+pdf_search <search-term> [folder-path]
 ```
 
 ### Examples
 
-Search current directory for a keyword:
-```sh
-pdf_search BAROI
+**Search current directory:**
+```bash
+pdf_search MINCHIA
 ```
 
-Search a specific folder:
-```sh
-pdf_search "invoice number" /path/to/folder
+**Search a specific folder:**
+```bash
+pdf_search "invoice number" ~/Documents/Invoices
 ```
 
-### Example Output
+### 📋 Example Output
 
-Matches found via direct text extraction:
-```
+```text
 ./documents/report.pdf -> page 3
+./scanned/receipt_2024.pdf -> page 1 (OCR)
+./archive/tax_return.pdf -> page 12
 ```
 
-Matches found via OCR fallback:
+---
+
+## 🛠️ How It Works
+
+```mermaid
+flowchart LR
+    A["PDF File Found"] --> B{"Direct Text Available?"}
+    B -- "Yes" --> C["pdftotext Scan"]
+    B -- "No / Empty" --> D["pdftoppm Image Render"]
+    D --> E["Tesseract OCR Engine"]
+    C --> F{"Match Found?"}
+    E --> F
+    F -- "Yes" --> G["Print File & Page Number"]
+    F -- "No" --> H["Next Page / File"]
 ```
-./scanned_doc.pdf -> page 1 (OCR)
+
+---
+
+## 📦 Installation Options
+
+### Option 1: Automated One-Liner (Recommended)
+
+Highlighting the hassle-free installation command:
+
+```bash
+curl -sSL https://raw.githubusercontent.com/cjoy72/pdf_search/main/install_pdf_search.sh | bash
+```
+
+**What `install_pdf_search.sh` handles automatically:**
+1. **OS Compatibility Verification**: Checks for supported macOS or Linux (Debian/Ubuntu/Fedora/Arch) environments.
+2. **Dependency Setup**: Runs `make`, which automatically installs `poppler-utils`, `tesseract`, and language packs via your system package manager (`brew`, `apt`, `dnf`, or `pacman`).
+3. **Compilation & Global Install**: Compiles C source files into `pdf_search` and installs it to `/usr/local/bin`.
+4. **Automatic Cleanup**: Deletes temporary git files and build artifacts upon completion.
+
+---
+
+### Option 2: Manual Clone & Build
+
+If you prefer to clone and build manually:
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/cjoy72/pdf_search.git
+cd pdf_search
+
+# 2. Build and install system-wide
+make
+```
+
+---
+
+## 🧩 Dependencies Breakdown
+
+| Component | Dependency | Description | Package Name |
+| :--- | :--- | :--- | :--- |
+| **Compiler** | `gcc` / `clang` | C99 supported C compiler | `build-essential` / `Xcode CLI` |
+| **Build System**| `make` | GNU Make build automation | `make` |
+| **Text Extraction**| `pdftotext` / `pdfinfo` | Extracts text streams & info from PDFs | `poppler` / `poppler-utils` |
+| **Page Rendering** | `pdftoppm` | Converts scanned pages to PNG for OCR | `poppler` / `poppler-utils` |
+| **OCR Engine** | `tesseract` | Optical character recognition | `tesseract` / `tesseract-ocr` |
+| **OCR Datasets** | `tesseract-lang` | Multi-language trained OCR datasets | `tesseract-lang` / `tesseract-ocr-all` |
+
+### Manual Package Pre-Installation
+
+If you prefer to install dependencies manually before building:
+
+- **macOS (Homebrew):**
+  ```bash
+  brew install poppler tesseract tesseract-lang
+  ```
+
+- **Ubuntu / Debian:**
+  ```bash
+  sudo apt-get update
+  sudo apt-get install -y build-essential poppler-utils tesseract-ocr tesseract-ocr-all
+  ```
+
+- **Fedora / RHEL:**
+  ```bash
+  sudo dnf install -y poppler-utils tesseract tesseract-langpack-en
+  ```
+
+- **Arch Linux:**
+  ```bash
+  sudo pacman -Sy --noconfirm poppler tesseract tesseract-data-eng
+  ```
+
+---
+
+## 🧹 Maintenance & Uninstallation
+
+**To uninstall `pdf_search` from `/usr/local/bin`:**
+```bash
+make uninstall
+```
+
+**To clean local build artifacts:**
+```bash
+make clean
 ```
