@@ -24,11 +24,15 @@ deps:
 			fi; \
 		elif [ "$(UNAME_S)" = "Linux" ]; then \
 			if command -v apt-get >/dev/null 2>&1; then \
-				sudo apt-get update && sudo apt-get install -y poppler-utils tesseract-ocr tesseract-ocr-all; \
+				sudo apt-get update && sudo apt-get install -y build-essential poppler-utils tesseract-ocr tesseract-ocr-all; \
 			elif command -v dnf >/dev/null 2>&1; then \
-				sudo dnf install -y poppler-utils tesseract tesseract-langpack-en; \
+				sudo dnf install -y gcc make poppler-utils tesseract tesseract-langpack-en; \
 			elif command -v pacman >/dev/null 2>&1; then \
-				sudo pacman -Sy --noconfirm poppler tesseract tesseract-data-eng; \
+				sudo pacman -Sy --noconfirm gcc make poppler tesseract tesseract-data-eng; \
+			elif command -v zypper >/dev/null 2>&1; then \
+				sudo zypper install -y gcc make poppler-tools tesseract; \
+			elif command -v apk >/dev/null 2>&1; then \
+				sudo apk add build-base poppler-utils tesseract-ocr tesseract-ocr-data-eng; \
 			else \
 				echo "Package manager not recognized. Please install poppler and tesseract manually."; \
 			fi; \

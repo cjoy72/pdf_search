@@ -17,21 +17,17 @@ if [ "$OS" = "Darwin" ]; then
     IS_SUPPORTED=true
 elif [ "$OS" = "Linux" ]; then
     if [ -f /etc/os-release ]; then
-        # Load OS release info
         . /etc/os-release
-        if [[ "${ID:-}" == "ubuntu" || "${ID:-}" == "debian" || "${ID_LIKE:-}" =~ "ubuntu" || "${ID_LIKE:-}" =~ "debian" ]]; then
-            echo "      Detected: Linux (${NAME:-Debian/Ubuntu}) (Supported)"
-            IS_SUPPORTED=true
-        fi
-    elif [ -f /etc/debian_version ]; then
-        echo "      Detected: Debian-based Linux (Supported)"
-        IS_SUPPORTED=true
+        echo "      Detected: Linux (${NAME:-Linux}) (Supported)"
+    else
+        echo "      Detected: Linux (Supported)"
     fi
+    IS_SUPPORTED=true
 fi
 
 if [ "$IS_SUPPORTED" = false ]; then
     echo "ERROR: Unsupported Operating System ($OS)."
-    echo "This script only supports macOS and Debian/Ubuntu-based Linux distributions."
+    echo "This script only supports macOS and Linux distributions."
     exit 1
 fi
 
