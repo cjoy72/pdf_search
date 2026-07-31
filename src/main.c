@@ -17,6 +17,13 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+/**
+ * Checks if a string ends with a given suffix.
+ *
+ * @param str The string to check.
+ * @param suffix The suffix to look for at the end of str.
+ * @return 1 if str ends with suffix, 0 otherwise.
+ */
 static int ends_with(const char *str, const char *suffix) {
     size_t len = strlen(str);
     size_t suf_len = strlen(suffix);
@@ -24,12 +31,24 @@ static int ends_with(const char *str, const char *suffix) {
     return strcmp(str + len - suf_len, suffix) == 0;
 }
 
+/**
+ * Converts a string to lowercase characters in place.
+ *
+ * @param s NUL-terminated string to be modified in place.
+ */
 static void to_lowercase(char *s) {
     for (size_t i = 0; s[i] != '\0'; ++i) {
         s[i] = (char)tolower((unsigned char)s[i]);
     }
 }
 
+/**
+ * Performs a case-insensitive substring search (needle in text).
+ *
+ * @param text The full string body to search within.
+ * @param needle The substring pattern to look for.
+ * @return 1 if needle is found inside text (case-insensitive), 0 otherwise.
+ */
 static int contains_case_insensitive(const char *text, const char *needle) {
     size_t nlen = strlen(needle);
     if (nlen == 0) return 1;
@@ -53,14 +72,31 @@ static int contains_case_insensitive(const char *text, const char *needle) {
     return found;
 }
 
+/**
+ * Prints CLI usage instructions to standard error.
+ *
+ * @param prog The executable binary name (argv[0]).
+ */
 static void print_usage(const char *prog) {
     fprintf(stderr, "Usage: %s <search-term> [folder]\n", prog);
 }
 
+/**
+ * Determines whether a filename ends with a .pdf or .PDF extension.
+ *
+ * @param name The filename or path to inspect.
+ * @return 1 if the file extension matches PDF format, 0 otherwise.
+ */
 static int is_pdf_file(const char *name) {
     return ends_with(name, ".pdf") || ends_with(name, ".PDF");
 }
 
+/**
+ * Checks whether the Tesseract OCR engine binary is available in system PATH.
+ * Caches the result after the first check to avoid redundant system calls.
+ *
+ * @return 1 if tesseract is available, 0 otherwise.
+ */
 static int check_tesseract_available(void) {
     static int tesseract_status = -1;
     if (tesseract_status != -1) {
@@ -71,6 +107,15 @@ static int check_tesseract_available(void) {
     return tesseract_status;
 }
 
+/**
+ * Renders a single PDF page into a PNG image (`pdftoppm`) and performs OCR (`tesseract`)
+ * to search for a case-insensitive keyword on image-based or scanned pages.
+ *
+ * @param pdf_path Absolute or relative path to the PDF document.
+ * @param page The 1-based page index to extract and analyze.
+ * @param needle The search term to match against OCR output.
+ * @return 1 if the search term was matched via OCR, 0 otherwise.
+ */
 static int ocr_pdf_page(const char *pdf_path, int page, const char *needle) {
     if (!check_tesseract_available()) {
         return 0;
@@ -116,6 +161,12 @@ static int ocr_pdf_page(const char *pdf_path, int page, const char *needle) {
     return found;
 }
 
+/**
+ * Queries the total page count of a PDF file using the `pdfinfo` command.
+ *
+ * @param pdf_path Path to the target PDF document.
+ * @return Total page count of the PDF (defaults to 1 on failure).
+ */
 static int get_page_count(const char *pdf_path) {
     char command[2048];
     FILE *fp;
@@ -141,6 +192,16 @@ static int get_page_count(const char *pdf_path) {
     return pages;
 }
 
+/**
+ * Searches a single PDF file page by page for the specified search term.
+ * First uses direct text extraction (`pdftotext`); if a page yields little or no text
+ * (scanned or image PDF), it falls back to OCR via `tesseract`.
+ *
+ * @param pdf_path File system path of the target PDF file.
+ * @param needle Search keyword to locate.
+ * @param display_path Path string formatted for user-facing output results.
+ * @return 1 if at least one matching page was found, 0 otherwise.
+ */
 static int search_pdf_file(const char *pdf_path, const char *needle, const char *display_path) {
     char command[4096];
     char temp_path[] = "/private/tmp/pdf_search_XXXXXX";
@@ -207,6 +268,13 @@ static int search_pdf_file(const char *pdf_path, const char *needle, const char 
     return matched_any;
 }
 
+/**
+ * Recursively traverses a directory structure, searching all PDF files found.
+ *
+ * @param dir_path Directory path to start traversing.
+ * @param needle Keyword to search for.
+ * @return 1 if any matching PDF page was found, 0 otherwise.
+ */
 static int search_directory(const char *dir_path, const char *needle) {
     DIR *dir = opendir(dir_path);
     if (!dir) {
@@ -242,6 +310,14 @@ static int search_directory(const char *dir_path, const char *needle) {
     return found_any;
 }
 
+/**
+ * CLI Entry point for pdf_search application.
+ * Parses command-line arguments and triggers recursive PDF search.
+ *
+ * @param argc Argument count.
+ * @param argv Argument vector (argv[1] = search term, optional argv[2] = folder path).
+ * @return 0 on success/completion, 1 on argument usage error.
+ */
 int main(int argc, char **argv) {
     if (argc < 2 || argc > 3) {
         print_usage(argv[0]);
