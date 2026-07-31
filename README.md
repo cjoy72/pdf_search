@@ -20,6 +20,21 @@ curl -sSL https://raw.githubusercontent.com/cjoy72/pdf_search/main/install_pdf_s
 
 ---
 
+## 💻 Supported Operating Systems & Distributions
+
+`pdf_search` and its automated installer support **macOS** and all major **Linux distributions** with auto-dependency installation:
+
+| OS / Distribution | Package Manager | Auto-Installed Packages |
+| :--- | :--- | :--- |
+| **macOS** | `brew` (Homebrew) | `poppler`, `tesseract`, `tesseract-lang` |
+| **Ubuntu / Debian / Mint / Pop!_OS** | `apt-get` | `build-essential`, `poppler-utils`, `tesseract-ocr`, `tesseract-ocr-all` |
+| **Arch Linux / Manjaro / EndeavourOS** | `pacman` | `gcc`, `make`, `poppler`, `tesseract`, `tesseract-data-eng` |
+| **Fedora / RHEL / CentOS / Rocky** | `dnf` | `gcc`, `make`, `poppler-utils`, `tesseract`, `tesseract-langpack-en` |
+| **openSUSE (Leap / Tumbleweed)** | `zypper` | `gcc`, `make`, `poppler-tools`, `tesseract` |
+| **Alpine Linux** | `apk` | `build-base`, `poppler-utils`, `tesseract-ocr`, `tesseract-ocr-data-eng` |
+
+---
+
 ## ✨ Key Features
 
 - ⚡ **Fast Direct Extraction**: Uses `pdftotext` for ultra-fast text search on standard vector PDFs.
@@ -42,7 +57,7 @@ pdf_search <search-term> [folder-path]
 
 **Search current directory:**
 ```bash
-pdf_search MINCHIA
+pdf_search "search term"
 ```
 
 **Search a specific folder:**
@@ -87,8 +102,8 @@ curl -sSL https://raw.githubusercontent.com/cjoy72/pdf_search/main/install_pdf_s
 ```
 
 **What `install_pdf_search.sh` handles automatically:**
-1. **OS Compatibility Verification**: Checks for supported macOS or Linux (Debian/Ubuntu/Fedora/Arch) environments.
-2. **Dependency Setup**: Runs `make`, which automatically installs `poppler-utils`, `tesseract`, and language packs via your system package manager (`brew`, `apt`, `dnf`, or `pacman`).
+1. **OS Compatibility Verification**: Verifies supported macOS or Linux operating environments.
+2. **Dependency Setup**: Runs `make`, which automatically detects your package manager (`apt`, `dnf`, `pacman`, `zypper`, `apk`, or `brew`) and installs missing dependencies (`poppler`, `tesseract`, build tools).
 3. **Compilation & Global Install**: Compiles C source files into `pdf_search` and installs it to `/usr/local/bin`.
 4. **Automatic Cleanup**: Deletes temporary git files and build artifacts upon completion.
 
@@ -113,12 +128,12 @@ make
 
 | Component | Dependency | Description | Package Name |
 | :--- | :--- | :--- | :--- |
-| **Compiler** | `gcc` / `clang` | C99 supported C compiler | `build-essential` / `Xcode CLI` |
-| **Build System**| `make` | GNU Make build automation | `make` |
-| **Text Extraction**| `pdftotext` / `pdfinfo` | Extracts text streams & info from PDFs | `poppler` / `poppler-utils` |
-| **Page Rendering** | `pdftoppm` | Converts scanned pages to PNG for OCR | `poppler` / `poppler-utils` |
+| **Compiler** | `gcc` / `clang` | C99 supported C compiler | `build-essential` / `gcc` / `Xcode CLI` |
+| **Build System**| `make` | GNU Make build automation | `make` / `build-base` |
+| **Text Extraction**| `pdftotext` / `pdfinfo` | Extracts text streams & info from PDFs | `poppler` / `poppler-utils` / `poppler-tools` |
+| **Page Rendering** | `pdftoppm` | Converts scanned pages to PNG for OCR | `poppler` / `poppler-utils` / `poppler-tools` |
 | **OCR Engine** | `tesseract` | Optical character recognition | `tesseract` / `tesseract-ocr` |
-| **OCR Datasets** | `tesseract-lang` | Multi-language trained OCR datasets | `tesseract-lang` / `tesseract-ocr-all` |
+| **OCR Datasets** | `tesseract-lang` | Multi-language trained OCR datasets | `tesseract-lang` / `tesseract-ocr-all` / `tesseract-data-eng` |
 
 ### Manual Package Pre-Installation
 
@@ -129,20 +144,30 @@ If you prefer to install dependencies manually before building:
   brew install poppler tesseract tesseract-lang
   ```
 
-- **Ubuntu / Debian:**
+- **Ubuntu / Debian / Mint:**
   ```bash
   sudo apt-get update
   sudo apt-get install -y build-essential poppler-utils tesseract-ocr tesseract-ocr-all
   ```
 
-- **Fedora / RHEL:**
+- **Arch Linux / Manjaro:**
   ```bash
-  sudo dnf install -y poppler-utils tesseract tesseract-langpack-en
+  sudo pacman -Sy --noconfirm gcc make poppler tesseract tesseract-data-eng
   ```
 
-- **Arch Linux:**
+- **Fedora / RHEL / CentOS:**
   ```bash
-  sudo pacman -Sy --noconfirm poppler tesseract tesseract-data-eng
+  sudo dnf install -y gcc make poppler-utils tesseract tesseract-langpack-en
+  ```
+
+- **openSUSE:**
+  ```bash
+  sudo zypper install -y gcc make poppler-tools tesseract
+  ```
+
+- **Alpine Linux:**
+  ```bash
+  sudo apk add build-base poppler-utils tesseract-ocr tesseract-ocr-data-eng
   ```
 
 ---
