@@ -1,0 +1,12 @@
+# Compiled binaries
+pdf_search
+*.o
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
