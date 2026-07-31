@@ -1,8 +1,8 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -O2 -std=c99
+CFLAGS = -Wall -Wextra -O2 -std=c99 -Isrc
 TARGET = pdf_search
 SRCDIR = src
-SOURCES = $(SRCDIR)/main.c
+SOURCES = $(wildcard $(SRCDIR)/*.c)
 
 PREFIX ?= /usr/local
 BINDIR ?= $(PREFIX)/bin
