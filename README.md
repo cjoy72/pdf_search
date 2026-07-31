@@ -48,18 +48,25 @@ sudo apt-get install -y build-essential poppler-utils tesseract-ocr tesseract-oc
 
 ---
 
-## Build
+## Build & System Installation
 
-To compile the binary (and automatically check/install missing dependencies on macOS and Linux):
+To compile and install `pdf_search` as a system program (compatible with both macOS and Linux):
 
 ```sh
 make
 ```
 
-When you run `make`, it automatically detects your OS (`Darwin` for macOS or `Linux`) and installs any missing tools (`poppler`, `tesseract`, `tesseract-lang`) via Homebrew or system package managers (`apt`, `dnf`, `pacman`) before building `pdf_search`.
+When you run `make`:
+1. It automatically checks for and installs missing dependencies (`poppler`, `tesseract`, `tesseract-lang`) via Homebrew or Linux package managers (`apt`, `dnf`, `pacman`).
+2. Compiles the `pdf_search` executable.
+3. Installs `pdf_search` system-wide to `/usr/local/bin` (asking for `sudo` permissions if needed) so it can be executed from **any directory**.
+
+To uninstall the system binary:
+```sh
+make uninstall
+```
 
 To clean build artifacts:
-
 ```sh
 make clean
 ```
@@ -68,20 +75,22 @@ make clean
 
 ## Usage
 
+Since `pdf_search` is installed system-wide, you can run it from any directory:
+
 ```sh
-./pdf_search <search-term> [folder]
+pdf_search <search-term> [folder]
 ```
 
 ### Examples
 
-Search current directory:
+Search current directory for a keyword:
 ```sh
-./pdf_search BAROI
+pdf_search BAROI
 ```
 
 Search a specific folder:
 ```sh
-./pdf_search "invoice number" /path/to/folder
+pdf_search "invoice number" /path/to/folder
 ```
 
 ### Example Output

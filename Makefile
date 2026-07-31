@@ -4,9 +4,12 @@ TARGET = pdf_search
 SRCDIR = src
 SOURCES = $(SRCDIR)/main.c
 
+PREFIX ?= /usr/local
+BINDIR ?= $(PREFIX)/bin
+
 UNAME_S := $(shell uname -s)
 
-all: deps $(TARGET)
+all: deps $(TARGET) install
 
 deps:
 	@echo "Checking dependencies on $(UNAME_S)..."
@@ -39,10 +42,30 @@ deps:
 $(TARGET): $(SOURCES)
 	$(CC) $(CFLAGS) -o $@ $(SOURCES)
 
+install: $(TARGET)
+	@echo "Installing $(TARGET) system-wide to $(BINDIR)..."
+	@if [ -w "$(BINDIR)" ] || { [ ! -e "$(BINDIR)" ] && [ -w "$$(dirname $(BINDIR))" ]; }; then \
+		mkdir -p $(BINDIR) && install -m 755 $(TARGET) $(BINDIR)/$(TARGET); \
+	else \
+		echo "Elevated permissions required. Installing to $(BINDIR) via sudo..."; \
+		sudo mkdir -p $(BINDIR) && sudo install -m 755 $(TARGET) $(BINDIR)/$(TARGET); \
+	fi
+	@echo "Successfully installed $(TARGET) to $(BINDIR)/$(TARGET)."
+	@echo "You can now run '$(TARGET) <keyword> [folder]' from any directory."
+
 run: $(TARGET)
 	./$(TARGET) $(ARGS)
+
+uninstall:
+	@echo "Uninstalling $(TARGET) from $(BINDIR)..."
+	@if [ -w "$(BINDIR)/$(TARGET)" ]; then \
+		rm -f $(BINDIR)/$(TARGET); \
+	else \
+		sudo rm -f $(BINDIR)/$(TARGET); \
+	fi
+	@echo "Successfully uninstalled $(TARGET)."
 
 clean:
 	rm -f $(TARGET)
 
-.PHONY: all deps run clean
+.PHONY: all deps install uninstall run clean
